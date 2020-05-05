@@ -103,7 +103,8 @@ namespace mediasoupclient
 				MSC_THROW_TYPE_ERROR("missing codec.mimeType");
 
 			std::smatch mimeTypeMatch;
-			std::regex_match(mimeTypeIt->get<std::string>(), mimeTypeMatch, MimeTypeRegex);
+			std::string s = mimeTypeIt->get<std::string>();
+			std::regex_match(s, mimeTypeMatch, MimeTypeRegex);
 
 			if (mimeTypeMatch.empty())
 				MSC_THROW_TYPE_ERROR("invalid codec.mimeType");
@@ -336,7 +337,8 @@ namespace mediasoupclient
 				MSC_THROW_TYPE_ERROR("missing codec.mimeType");
 
 			std::smatch mimeTypeMatch;
-			std::regex_match(mimeTypeIt->get<std::string>(), mimeTypeMatch, MimeTypeRegex);
+			std::string s = mimeTypeIt->get<std::string>();
+			std::regex_match(s, mimeTypeMatch, MimeTypeRegex);
 
 			if (mimeTypeMatch.empty())
 				MSC_THROW_TYPE_ERROR("invalid codec.mimeType");
@@ -746,7 +748,8 @@ namespace mediasoupclient
 				MSC_THROW_TYPE_ERROR("missing params.protocol");
 
 			std::smatch protocolMatch;
-			std::regex_match(protocolIt->get<std::string>(), protocolMatch, ProtocolRegex);
+			std::string s = protocolIt->get<std::string>();
+			std::regex_match(s, protocolMatch, ProtocolRegex);
 
 			if (protocolMatch.empty())
 				MSC_THROW_TYPE_ERROR("invalid params.protocol");
@@ -760,7 +763,8 @@ namespace mediasoupclient
 				MSC_THROW_TYPE_ERROR("missing params.type");
 
 			std::smatch typeMatch;
-			std::regex_match(typeIt->get<std::string>(), typeMatch, TypeRegex);
+			std::string s1 = typeIt->get<std::string>();
+			std::regex_match(s1, typeMatch, TypeRegex);
 
 			if (typeMatch.empty())
 				MSC_THROW_TYPE_ERROR("invalid params.type");
@@ -831,7 +835,8 @@ namespace mediasoupclient
 				MSC_THROW_TYPE_ERROR("missing params.role");
 
 			std::smatch roleMatch;
-			std::regex_match(roleIt->get<std::string>(), roleMatch, RoleRegex);
+			std::string s = roleIt->get<std::string>();
+			std::regex_match(s, roleMatch, RoleRegex);
 
 			if (roleMatch.empty())
 				MSC_THROW_TYPE_ERROR("invalid params.role");

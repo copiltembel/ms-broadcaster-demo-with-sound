@@ -14,7 +14,7 @@ configure_file (
 )
 
 # C++ standard requirements.
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Project options.
@@ -69,6 +69,8 @@ set(
 	src/mediasoupclient.cpp
 	src/ortc.cpp
 	src/scalabilityMode.cpp
+	src/test_audio_device.cc
+	src/fake_audio_capture_module.cc
 	src/sdp/MediaSection.cpp
 	src/sdp/RemoteSdp.cpp
 	src/sdp/Utils.cpp

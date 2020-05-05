@@ -11,7 +11,13 @@
 #include <api/video_codecs/builtin_video_encoder_factory.h>
 #include <rtc_base/ssl_adapter.h>
 
+#include "fake_audio_capture_module.h"
+#include "test_audio_device.h"
+#include <api/task_queue/default_task_queue_factory.h>
+
 using json = nlohmann::json;
+
+static std::unique_ptr<webrtc::TaskQueueFactory> queueFactory;
 
 namespace mediasoupclient
 {
@@ -90,11 +96,21 @@ namespace mediasoupclient
 				MSC_THROW_INVALID_STATE_ERROR("thread start errored");
 			}
 
+			// auto fakeAudioCaptureModule = FakeAudioCaptureModule::Create();
+
+			queueFactory = webrtc::CreateDefaultTaskQueueFactory();
+
+			auto testAudioCaptureModule = webrtc::TestAudioDeviceModule::Create(queueFactory.get(),
+					webrtc::TestAudioDeviceModule::CreatePulsedNoiseCapturer(32000, 48000, 2),
+					webrtc::TestAudioDeviceModule::CreateDiscardRenderer(48000, 2));
+
 			this->peerConnectionFactory = webrtc::CreatePeerConnectionFactory(
 			  this->networkThread.get(),
 			  this->workerThread.get(),
 			  this->signalingThread.get(),
-			  nullptr /*default_adm*/,
+			//   nullptr /*default_adm*/,
+			//   fakeAudioCaptureModule,
+			  testAudioCaptureModule,
 			  webrtc::CreateBuiltinAudioEncoderFactory(),
 			  webrtc::CreateBuiltinAudioDecoderFactory(),
 			  webrtc::CreateBuiltinVideoEncoderFactory(),

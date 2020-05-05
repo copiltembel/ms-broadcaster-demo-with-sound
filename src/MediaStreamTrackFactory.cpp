@@ -13,11 +13,12 @@
 #include "fakegenerators/fake_periodic_video_track_source.h"
 #include "fakegenerators/frame_generator_capturer_video_track_source.h"
 #include "system_wrappers/include/clock.h"
-
+#include "fakegenerators/test_audio_device.h"
 
 using namespace mediasoupclient;
 
 static rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory;
+static std::unique_ptr<webrtc::TaskQueueFactory> queueFactory;
 
 /* MediaStreamTrack holds reference to the threads of the PeerConnectionFactory.
  * Use plain pointers in order to avoid threads being destructed before tracks.
@@ -44,16 +45,24 @@ static void createFactory()
 	webrtc::PeerConnectionInterface::RTCConfiguration config;
 
 	auto fakeAudioCaptureModule = FakeAudioCaptureModule::Create();
-	if (!fakeAudioCaptureModule)
-	{
-		MSC_THROW_INVALID_STATE_ERROR("audio capture module creation errored");
-	}
+	// queueFactory = webrtc::CreateDefaultTaskQueueFactory();
+
+	// auto testAudioCaptureModule = webrtc::TestAudioDeviceModule::Create(queueFactory.get(),
+	// 		webrtc::TestAudioDeviceModule::CreatePulsedNoiseCapturer(32000, 48000, 2),
+	// 		webrtc::TestAudioDeviceModule::CreateDiscardRenderer(48000, 2));
+
+	// if (!testAudioCaptureModule)
+	// {
+	// 	MSC_THROW_INVALID_STATE_ERROR("audio capture module creation errored");
+	// } else {
+	// 	std::cout << "Created audio capture module" << std::endl;
+	// }
 
 	factory = webrtc::CreatePeerConnectionFactory(
 	  networkThread,
 	  workerThread,
 	  signalingThread,
-	  fakeAudioCaptureModule,
+	  fakeAudioCaptureModule, // testAudioCaptureModule,
 	  webrtc::CreateBuiltinAudioEncoderFactory(),
 	  webrtc::CreateBuiltinAudioDecoderFactory(),
 	  webrtc::CreateBuiltinVideoEncoderFactory(),
@@ -77,6 +86,7 @@ rtc::scoped_refptr<webrtc::AudioTrackInterface> createAudioTrack(const std::stri
 	options.highpass_filter = false;
 
 	rtc::scoped_refptr<webrtc::AudioSourceInterface> source = factory->CreateAudioSource(options);
+	std::cout << "Audio source created -> creating track" << std::endl;
 
 	return factory->CreateAudioTrack(label, source);
 }
