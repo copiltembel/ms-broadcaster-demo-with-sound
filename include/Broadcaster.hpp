@@ -38,6 +38,8 @@ private:
 	std::string id = std::to_string(rtc::CreateRandomId());
 	std::string transportId;
 	std::string baseUrl;
+	rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> factory;
+	
 };
 
 #endif // STOKER_HPP
