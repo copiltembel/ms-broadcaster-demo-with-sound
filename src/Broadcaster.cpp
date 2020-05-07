@@ -131,8 +131,13 @@ void Broadcaster::Start(
 
 	this->baseUrl = baseUrl;
 
+	this->factory = createFactory();
+	mediasoupclient::PeerConnection::Options options;
+	options.factory = factory.get();
+
 	// Load the device.
-	this->device.Load(routerRtpCapabilities);
+	this->device.Load(routerRtpCapabilities, &options);
+
 
 	std::cout << "[INFO] creating Broadcaster..." << std::endl;
 
@@ -224,13 +229,14 @@ void Broadcaster::Start(
 	  this->transportId,
 	  response["iceParameters"],
 	  response["iceCandidates"],
-	  response["dtlsParameters"]);
+	  response["dtlsParameters"],
+	  &options);
 
 	///////////////////////// Create Audio Producer //////////////////////////
 
 	if (enableAudio && this->device.CanProduce("audio"))
 	{
-		auto audioTrack = createAudioTrack(std::to_string(rtc::CreateRandomId()));
+		auto audioTrack = createAudioTrack(factory, std::to_string(rtc::CreateRandomId()));
 
 		/* clang-format off */
 		json codecOptions = {
@@ -250,7 +256,7 @@ void Broadcaster::Start(
 
 	if (this->device.CanProduce("video"))
 	{
-		auto videoTrack = createSquaresVideoTrack(std::to_string(rtc::CreateRandomId()));
+		auto videoTrack = createSquaresVideoTrack(factory, std::to_string(rtc::CreateRandomId()));
 
 		if (useSimulcast)
 		{
