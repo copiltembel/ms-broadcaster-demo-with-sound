@@ -11,10 +11,6 @@
 #include <api/video_codecs/builtin_video_encoder_factory.h>
 #include <rtc_base/ssl_adapter.h>
 
-#include "fake_audio_capture_module.h"
-#include "test_audio_device.h"
-#include <api/task_queue/default_task_queue_factory.h>
-
 using json = nlohmann::json;
 
 namespace mediasoupclient
@@ -85,7 +81,7 @@ namespace mediasoupclient
 			this->signalingThread = rtc::Thread::Create();
 			this->workerThread    = rtc::Thread::Create();
 
-			this->signalingThread->SetName("network_thread", nullptr);
+			this->networkThread->SetName("network_thread", nullptr);
 			this->signalingThread->SetName("signaling_thread", nullptr);
 			this->workerThread->SetName("worker_thread", nullptr);
 
@@ -94,21 +90,11 @@ namespace mediasoupclient
 				MSC_THROW_INVALID_STATE_ERROR("thread start errored");
 			}
 
-			auto fakeAudioCaptureModule = FakeAudioCaptureModule::Create();
-
-			// std::unique_ptr<webrtc::TaskQueueFactory> queueFactory = webrtc::CreateDefaultTaskQueueFactory();
-
-			// auto testAudioCaptureModule = webrtc::TestAudioDeviceModule::Create(queueFactory.get(),
-			// 		webrtc::TestAudioDeviceModule::CreatePulsedNoiseCapturer(32000, 48000, 2),
-			// 		webrtc::TestAudioDeviceModule::CreateDiscardRenderer(48000, 2));
-
 			this->peerConnectionFactory = webrtc::CreatePeerConnectionFactory(
 			  this->networkThread.get(),
 			  this->workerThread.get(),
 			  this->signalingThread.get(),
-			//   nullptr /*default_adm*/,
-			  fakeAudioCaptureModule,
-			//   testAudioCaptureModule,
+			  nullptr /*default_adm*/,
 			  webrtc::CreateBuiltinAudioEncoderFactory(),
 			  webrtc::CreateBuiltinAudioDecoderFactory(),
 			  webrtc::CreateBuiltinVideoEncoderFactory(),
@@ -197,8 +183,8 @@ namespace mediasoupclient
 		rtc::scoped_refptr<SetSessionDescriptionObserver> observer(
 		  new rtc::RefCountedObject<SetSessionDescriptionObserver>());
 
-		auto& typeStr = sdpType2String[type];
-		auto future   = observer->GetFuture();
+		const auto& typeStr = sdpType2String[type];
+		auto future         = observer->GetFuture();
 
 		sessionDescription = webrtc::CreateSessionDescription(typeStr, sdp, &error);
 		if (sessionDescription == nullptr)
@@ -227,8 +213,8 @@ namespace mediasoupclient
 		rtc::scoped_refptr<SetSessionDescriptionObserver> observer(
 		  new rtc::RefCountedObject<SetSessionDescriptionObserver>());
 
-		auto& typeStr = sdpType2String[type];
-		auto future   = observer->GetFuture();
+		const auto& typeStr = sdpType2String[type];
+		auto future         = observer->GetFuture();
 
 		sessionDescription = webrtc::CreateSessionDescription(typeStr, sdp, &error);
 		if (sessionDescription == nullptr)
@@ -378,6 +364,26 @@ namespace mediasoupclient
 		this->pc->GetStats(std::move(selector), callback);
 
 		return future.get();
+	}
+
+	rtc::scoped_refptr<webrtc::DataChannelInterface> PeerConnection::CreateDataChannel(
+	  const std::string& label, const webrtc::DataChannelInit* config)
+	{
+		MSC_TRACE();
+
+		rtc::scoped_refptr<webrtc::DataChannelInterface> webrtcDataChannel =
+		  this->pc->CreateDataChannel(label, config);
+
+		if (webrtcDataChannel.get())
+		{
+			MSC_DEBUG("Success creating data channel");
+		}
+		else
+		{
+			MSC_THROW_ERROR("Failed creating data channel");
+		}
+
+		return webrtcDataChannel;
 	}
 
 	/* SetSessionDescriptionObserver */

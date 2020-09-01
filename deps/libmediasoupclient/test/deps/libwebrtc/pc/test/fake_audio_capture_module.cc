@@ -8,17 +8,15 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include "fake_audio_capture_module.h"
+#include "pc/test/fake_audio_capture_module.h"
 
 #include <string.h>
-#include <iostream>
 
 #include "rtc_base/checks.h"
 #include "rtc_base/location.h"
 #include "rtc_base/ref_counted_object.h"
 #include "rtc_base/thread.h"
 #include "rtc_base/time_utils.h"
-
 
 // Audio sample value that is high enough that it doesn't occur naturally when
 // frames are being faked. E.g. NetEq will not generate this large sample value
@@ -86,7 +84,6 @@ int32_t FakeAudioCaptureModule::RegisterAudioCallback(
 
 int32_t FakeAudioCaptureModule::Init() {
   // Initialize is called by the factory method. Safe to ignore this Init call.
-  std::cout << "FakeAudioCaptureModule::Init()" << std::endl;
   return 0;
 }
 
@@ -436,7 +433,7 @@ bool FakeAudioCaptureModule::CheckRecBuffer(int value) {
   return false;
 }
 
-bool FakeAudioCaptureModule::ShouldStartProcessing() {
+bool FakeAudioCaptureModule::ShouldStartProcessing() const {
   return recording_ || playing_;
 }
 

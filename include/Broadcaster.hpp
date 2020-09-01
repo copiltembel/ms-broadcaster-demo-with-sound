@@ -32,6 +32,17 @@ public:
 	  const nlohmann::json& routerRtpCapabilities);
 	void Stop();
 
+	std::future<std::string> OnProduceData(mediasoupclient::SendTransport* sendTransport, 
+		const nlohmann::json& sctpStreamParameters, 
+		const std::string& label,
+		const std::string& protocol,
+		const nlohmann::json& appData)
+	{ 
+			std::promise<std::string> promise; 
+			promise.set_value(""); 
+			return promise.get_future(); 
+	};
+
 private:
 	mediasoupclient::Device device;
 

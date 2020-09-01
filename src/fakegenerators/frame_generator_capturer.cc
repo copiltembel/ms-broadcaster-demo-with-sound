@@ -8,7 +8,7 @@
  *  be found in the AUTHORS file in the root of the source tree.
  */
 
-#include "test/frame_generator_capturer.h"
+#include "fakegenerators/frame_generator_capturer.h"
 
 #include <algorithm>
 #include <cmath>
@@ -92,9 +92,9 @@ bool FrameGeneratorCapturer::Init() {
 
   frame_task_ = RepeatingTaskHandle::DelayedStart(
       task_queue_.Get(),
-      TimeDelta::seconds(1) / GetCurrentConfiguredFramerate(), [this] {
+      TimeDelta::Seconds(1) / GetCurrentConfiguredFramerate(), [this] {
         InsertFrame();
-        return TimeDelta::seconds(1) / GetCurrentConfiguredFramerate();
+        return TimeDelta::Seconds(1) / GetCurrentConfiguredFramerate();
       });
   return true;
 }
@@ -131,7 +131,7 @@ void FrameGeneratorCapturer::Start() {
   if (!frame_task_.Running()) {
     frame_task_ = RepeatingTaskHandle::Start(task_queue_.Get(), [this] {
       InsertFrame();
-      return TimeDelta::seconds(1) / GetCurrentConfiguredFramerate();
+      return TimeDelta::Seconds(1) / GetCurrentConfiguredFramerate();
     });
   }
 }

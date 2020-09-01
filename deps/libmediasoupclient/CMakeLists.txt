@@ -4,8 +4,8 @@ project(mediasoupclient LANGUAGES CXX)
 
 # Set version number.
 set(mediasoupclient_VERSION_MAJOR 3)
-set(mediasoupclient_VERSION_MINOR 0)
-set(mediasoupclient_VERSION_PATCH 8)
+set(mediasoupclient_VERSION_MINOR 1)
+set(mediasoupclient_VERSION_PATCH 0)
 
 # Configure a header file to pass the version.
 configure_file (
@@ -60,6 +60,8 @@ set(HEADER_FILES
 set(
 	SOURCE_FILES
 	src/Consumer.cpp
+	src/DataConsumer.cpp
+	src/DataProducer.cpp
 	src/Device.cpp
 	src/Handler.cpp
 	src/Logger.cpp
@@ -69,8 +71,6 @@ set(
 	src/mediasoupclient.cpp
 	src/ortc.cpp
 	src/scalabilityMode.cpp
-	src/test_audio_device.cc
-	src/fake_audio_capture_module.cc
 	src/sdp/MediaSection.cpp
 	src/sdp/RemoteSdp.cpp
 	src/sdp/Utils.cpp
